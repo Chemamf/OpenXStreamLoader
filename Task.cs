@@ -168,6 +168,7 @@ namespace OpenXStreamLoader
                 Directory.CreateDirectory(outputFolder);
             }
             _fileFullPath = Path.Combine(outputFolder, _fileName);
+            string ffmpegArg = $" --ffmpeg-ffmpeg \"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Streamlink_8.3.0_Portable", "ffmpeg", "ffmpeg.exe")}\"";
 
             _status.State = TaskState.InProgress;
             _status.FileName = _fileName;
@@ -177,7 +178,7 @@ namespace OpenXStreamLoader
             _status.FileSize = -1;
             _status.ConsoleOutput = "Started: " + DateTime.Now.ToString("dd-MM-yyyy HH.mm.ss") + "\n";
 
-            _process.StartInfo.Arguments = " " + _streamlinkOptions + " " + _url + " " + _quality + " -o \"" + _fileFullPath + "\"" ;
+            _process.StartInfo.Arguments = " " + _streamlinkOptions + " " + ffmpegArg + " " + _url + " " + _quality + " -o \"" + _fileFullPath + "\"" ;
 
             try
             {

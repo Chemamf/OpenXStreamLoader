@@ -61,7 +61,7 @@ namespace OpenXStreamLoader
 
         private readonly float _version = 0.6f;
         private readonly int _trayBalloonTimeout = 5000; // ms
-        private readonly string _streamlinkDefaultOptions = "--plugin-dirs .\\plugins --hls-playlist-reload-attempts 30 --hls-segment-threads 4 --hls-segment-attempts 10 --hls-timeout 40 --stream-timeout 120 --retry-streams 10 --retry-max-attempts 30";
+        private readonly string _streamlinkDefaultOptions = "--loglevel info --plugin-dirs .\\plugins --hls-playlist-reload-attempts 30 --stream-segment-threads 4 --stream-segment-attempts 10 --stream-segment-timeout 20 --stream-timeout 20 --http-timeout 20 --retry-streams 10";
         private readonly object _onlineCheckQueueLock = new object();
 
         private readonly string _site1String1 = "aHR0cHM6Ly9yb29taW1nLnN0cmVhbS5oaWdod2VibWVkaWEuY29tL3JpLw==".from64();
