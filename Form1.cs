@@ -59,7 +59,7 @@ namespace OpenXStreamLoader
             public Image _profileImage;
         }
 
-        private readonly float _version = 0.5f;
+        private readonly float _version = 0.6f;
         private readonly int _trayBalloonTimeout = 5000; // ms
         private readonly string _streamlinkDefaultOptions = "--plugin-dirs .\\plugins --hls-playlist-reload-attempts 30 --hls-segment-threads 4 --hls-segment-attempts 10 --hls-timeout 40 --stream-timeout 120 --retry-streams 10 --retry-max-attempts 30";
         private readonly object _onlineCheckQueueLock = new object();
@@ -483,7 +483,7 @@ namespace OpenXStreamLoader
         {
             try
             {
-                using (var response = creatWebRequest("http://github.com/Chemamf/OpenXStreamLoader/releases", 8000).GetResponse())
+                using (var response = creatWebRequest("http://github.com/voidtemp/OpenXStreamLoader/releases", 8000).GetResponse())
                 {
                     StreamReader streamReader = new StreamReader(response.GetResponseStream());
                     string pageText = streamReader.ReadToEnd();
@@ -497,7 +497,7 @@ namespace OpenXStreamLoader
 
                         if (MessageBox.Show("New version available: v" + versionString + "\nOpen github releases page?", "OpenXStreamLoader", MessageBoxButtons.YesNo) == DialogResult.Yes)
                         {
-                            openUrlInBrowser("http://github.com/Chemamf/OpenXStreamLoader/releases");
+                            openUrlInBrowser("https://github.com/voidtemp/OpenXStreamLoader/releases");
                         }
 
                         return true;
