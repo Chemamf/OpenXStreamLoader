@@ -61,7 +61,7 @@ namespace OpenXStreamLoader
 
         private readonly float _version = 0.5f;
         private readonly int _trayBalloonTimeout = 5000; // ms
-        private readonly string _streamlinkDefaultOptions = "--hls-timeout 120 --hls-playlist-reload-attempts 20 --hls-segment-timeout 90 --hds-segment-threads 8 --hls-segment-threads 8 --hds-timeout 120 --hds-segment-timeout 90 --hds-segment-attempts 20";
+        private readonly string _streamlinkDefaultOptions = "--plugin-dirs .\\plugins --hls-playlist-reload-attempts 30 --hls-segment-threads 4 --hls-segment-attempts 10 --hls-timeout 40 --stream-timeout 120 --retry-streams 10 --retry-max-attempts 30";
         private readonly object _onlineCheckQueueLock = new object();
 
         private readonly string _site1String1 = "aHR0cHM6Ly9yb29taW1nLnN0cmVhbS5oaWdod2VibWVkaWEuY29tL3JpLw==".from64();
@@ -163,7 +163,7 @@ namespace OpenXStreamLoader
 
         private void setDefaultSettings()
         {
-            _settings._streamlinkExePath = "Streamlink_Portable\\Streamlink.exe";
+            _settings._streamlinkExePath = "Streamlink_8.3.0_Portable\\bin\\Streamlink.exe";
             _settings._streamlinkOptions = _streamlinkDefaultOptions;
             _settings._defaultRecordsPath = "";
             _settings._browserPath = "";
@@ -483,7 +483,7 @@ namespace OpenXStreamLoader
         {
             try
             {
-                using (var response = creatWebRequest("http://github.com/voidtemp/OpenXStreamLoader/releases", 8000).GetResponse())
+                using (var response = creatWebRequest("http://github.com/Chemamf/OpenXStreamLoader/releases", 8000).GetResponse())
                 {
                     StreamReader streamReader = new StreamReader(response.GetResponseStream());
                     string pageText = streamReader.ReadToEnd();
@@ -497,7 +497,7 @@ namespace OpenXStreamLoader
 
                         if (MessageBox.Show("New version available: v" + versionString + "\nOpen github releases page?", "OpenXStreamLoader", MessageBoxButtons.YesNo) == DialogResult.Yes)
                         {
-                            openUrlInBrowser("https://github.com/voidtemp/OpenXStreamLoader/releases");
+                            openUrlInBrowser("http://github.com/Chemamf/OpenXStreamLoader/releases");
                         }
 
                         return true;
@@ -1440,7 +1440,9 @@ namespace OpenXStreamLoader
 
             try
             {
-                System.Diagnostics.Process.Start("explorer.exe", "/select, \"" + filename + "\"");
+                string outputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
+                string fullPath = Path.Combine(outputFolder, filename);
+                System.Diagnostics.Process.Start("explorer.exe", "/select, \"" + fullPath + "\"");
             }
             catch (Exception exception)
             {

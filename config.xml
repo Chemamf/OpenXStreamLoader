@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <Settings HttpRequestDelay="300" FavoritesUpdateInterval="60" WaitingTaskInterval="30">
-    <StreamlinkExe>Streamlink_Portable\Streamlink.exe</StreamlinkExe>
+    <StreamlinkExe>Streamlink_8.3.0_Portable\bin\Streamlink.exe</StreamlinkExe>
   </Settings>
 </Configuration>

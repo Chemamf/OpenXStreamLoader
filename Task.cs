@@ -21,6 +21,7 @@ namespace OpenXStreamLoader
         {
             TaskState State { get; }
             string FileName { get; }
+            string FullPath { get; }
             long FileSize { get; }
             DateTime Created { get; }
             DateTime Ended { get; }
@@ -31,6 +32,7 @@ namespace OpenXStreamLoader
         {
             public TaskState State { get; set; } = TaskState.Stopped;
             public string FileName { get; set; }
+            public string FullPath { get; set; }
             public long FileSize { get; set; } = 0;
             public DateTime Created { get; set; }
             public DateTime Ended { get; set; }
@@ -58,6 +60,7 @@ namespace OpenXStreamLoader
         private string _streamlinkOptions;
         private string _outputFileNameTemplate;
         private string _fileName;
+        private string _fileFullPath;
         private Process _process;
         private System.Timers.Timer _onlineCheckTimer;
         private System.Timers.Timer _statusCheckTimer;
@@ -151,19 +154,30 @@ namespace OpenXStreamLoader
             _process.StartInfo.UseShellExecute = false;
             _process.StartInfo.RedirectStandardOutput = true;
             _process.StartInfo.FileName = _executablePath;
+            _process.StartInfo.RedirectStandardError = true;
             _process.StartInfo.CreateNoWindow = true;
             _process.EnableRaisingEvents = true;
-            _process.StartInfo.WorkingDirectory = "";
+            _process.StartInfo.WorkingDirectory = Path.GetDirectoryName(_executablePath);
             _process.OutputDataReceived += new DataReceivedEventHandler(onOutputDataReceived);
+            _process.ErrorDataReceived += (s, e) => { if (e.Data == null) return; lock (_consoleLock) _status.ConsoleOutput += "[ERR] " + e.Data + "\n"; };
             _process.Exited += new EventHandler(onProcessExited);
             _fileName = _getFinalFileNameFromTemplate(_outputFileNameTemplate);
+            string outputFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
+            if (!Directory.Exists(outputFolder))
+            {
+                Directory.CreateDirectory(outputFolder);
+            }
+            _fileFullPath = Path.Combine(outputFolder, _fileName);
+
             _status.State = TaskState.InProgress;
             _status.FileName = _fileName;
+            _status.FullPath = _fileFullPath;
             _status.Created = DateTime.Now;
             _status.Ended = DateTime.Now;
             _status.FileSize = -1;
-            _status.ConsoleOutput = "Started: " + DateTime.Now.ToString("dd-MM-yyyy HH꞉mm꞉ss") + "\n";
-            _process.StartInfo.Arguments = " " + _streamlinkOptions + " -o \"" + _fileName + "\" -f " + _url + " " + _quality;
+            _status.ConsoleOutput = "Started: " + DateTime.Now.ToString("dd-MM-yyyy HH.mm.ss") + "\n";
+
+            _process.StartInfo.Arguments = " " + _streamlinkOptions + " " + _url + " " + _quality + " -o \"" + _fileFullPath + "\"" ;
 
             try
             {
@@ -178,6 +192,7 @@ namespace OpenXStreamLoader
                 {
                     _process.Start();
                     _process.BeginOutputReadLine();
+                    _process.BeginErrorReadLine();
                 }
 
                 _onlineCheckTimer.Enabled = asWaiting && _performOnlineCheck;
@@ -186,7 +201,7 @@ namespace OpenXStreamLoader
             catch (Exception exception)
             {
                 _status.State = TaskState.StartProcessError;
-                _status.ConsoleOutput += DateTime.Now.ToString("dd-MM-yyyy HH꞉mm꞉ss") + "\n" + exception.Message + "\n";
+                _status.ConsoleOutput += DateTime.Now.ToString("dd-MM-yyyy HH.mm.ss") + "\n" + exception.Message + "\n";
                 _onlineCheckTimer.Enabled = _performOnlineCheck;
                 _statusCheckTimer.Enabled = false;
             }
@@ -197,7 +212,7 @@ namespace OpenXStreamLoader
         private void stopProcess()
         {
             _status.Ended = DateTime.Now;
-            _status.ConsoleOutput += "Stopped " + DateTime.Now.ToString("dd-MM-yyyy HH꞉mm꞉ss") + "\n";
+            _status.ConsoleOutput += "Stopped " + DateTime.Now.ToString("dd-MM-yyyy HH.mm.ss") + "\n";
             _processExiting = true;
 
             try
@@ -258,7 +273,7 @@ namespace OpenXStreamLoader
 
             _statusCheckTimer.Enabled = false;
             _status.Ended = DateTime.Now;
-            _status.ConsoleOutput += "Exited " + DateTime.Now.ToString("dd-MM-yyyy HH꞉mm꞉ss") + "\n";
+            _status.ConsoleOutput += "Exited " + DateTime.Now.ToString("dd-MM-yyyy HH.mm.ss") + "\n";
 
             // Was current recording ended by time limit?  Make sure last file had duration before repeating.
             if (_performOnlineCheck && recordableStreamFound()  && _status.FileSize > 1000 )
@@ -307,14 +322,14 @@ namespace OpenXStreamLoader
 
         private long getFileSize()
         {
-            if (!File.Exists(_fileName))
+            if (!File.Exists(_fileFullPath))
             {
                 return -1;
             }
 
             try
             {
-                return new FileInfo(_fileName).Length;
+                return new FileInfo(_fileFullPath).Length;
             }
             catch
             {

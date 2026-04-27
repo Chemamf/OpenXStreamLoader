@@ -1060,7 +1060,7 @@
             this.lbReleases.Size = new System.Drawing.Size(414, 17);
             this.lbReleases.TabIndex = 4;
             this.lbReleases.TabStop = true;
-            this.lbReleases.Text = "https://github.com/m-alexander86/OpenXStreamLoader/releases";
+            this.lbReleases.Text = "https://github.com/Chemamf/OpenXStreamLoader/releases";
             this.lbReleases.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbReleases_LinkClicked);
             // 
             // lbProductPage
@@ -1072,7 +1072,7 @@
             this.lbProductPage.Size = new System.Drawing.Size(356, 17);
             this.lbProductPage.TabIndex = 3;
             this.lbProductPage.TabStop = true;
-            this.lbProductPage.Text = "https://github.com/m-alexander86/OpenXStreamLoader";
+            this.lbProductPage.Text = "https://github.com/Chemamf/OpenXStreamLoader";
             this.lbProductPage.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbProductPage_LinkClicked);
             // 
             // lbVersion
